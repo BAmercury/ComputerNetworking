@@ -31,6 +31,7 @@ while keep_alive:
     print("2: Send multiple words")
     print("3: Exit and close connection")
     print("4: Total number of palindromes found")
+    print("5: Return list of palindromes found")
     command = raw_input("Please enter a command: ")
 
     if (command == "1"):
@@ -49,7 +50,12 @@ while keep_alive:
         print(data)
     elif (command == "4"):
         # Return result from server, the amount of palindromes found thus far:
-        s.send("4")
+        s.send("4") # Send the command to the server
+        data = s.recv(BUFFER_SIZE) # Show server result
+        print(data)
+    elif (command == "5"):
+        # Ask server to return list of all palindromes found
+        s.send("5")
         data = s.recv(BUFFER_SIZE)
         print(data)
     elif (command == "3"):
