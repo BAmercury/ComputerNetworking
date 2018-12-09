@@ -1,16 +1,16 @@
+#!/usr/bin/env python
 # using Python 2.7
 
 from socket import *
 import threading
 from SocketServer import ThreadingMixIn
-import pickle
- 
-BUFFER_SIZE = 1024
+# Server Host IP address and port information
+BUFFER_SIZE = 1024 # TCP message buffer size
 TCP_IP = '192.168.1.126'
 TCP_PORT = 5005
 
 
-# Create TCP socket objects
+# Create TCP socket objects, see report for furthur detail
 server_socket = socket(AF_INET, SOCK_STREAM)
 server_socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) 
 server_socket.bind((TCP_IP, TCP_PORT))
@@ -60,14 +60,18 @@ def list_to_file(ip, itemlist):
 class ClientCallBack(threading.Thread):
 
     def __init__(self,ip,port):
+		# Initialize the instance as a Python Thread object, allow thread to have access to IP and port information
         threading.Thread.__init__(self)
         self.ip = ip
         self.port = port
     def run(self):
+		# Recall found palindromes from file .txt database. Use IP address to find the corresponding user data
         found_palindromes = file_to_list(self.ip)
         while True:
+			# Recieve and format command packet as a python list
             data = conn.recv(BUFFER_SIZE)
             data_list = data.split(",")
+			# Parse the command index of command packet
             if (data_list[0] == "1"):
                 result = isPalindrome(data_list[1])
                 if (result == True):
@@ -132,6 +136,7 @@ class ClientCallBack(threading.Thread):
                 else:
                     conn.send("No palindromes in list") # Tell client no palindromes are in list
             elif (data_list[0] == "3"):
+				# Save python list user data to file and close the connection
                 list_to_file(self.ip, found_palindromes)
                 conn.send("Bye")
                 break
@@ -141,14 +146,19 @@ class ClientCallBack(threading.Thread):
 if __name__ == '__main__':
     try:
         while keep_alive:
+			# List for new connections
             server_socket.listen(4)
             print("Waiting for clients to connect...")
+			# Accept the new connection
             (conn, (ip,address)) = server_socket.accept()
             print("Client connected. Address: ", address)
+			# Spin and start a new thread, give thread object the IP and address
             newThread = ClientCallBack(ip,address)
             newThread.start()
+		# Close the server down
         server_socket.close()
     except KeyboardInterrupt:
+		# Close all running threads
         for t in threads:
             t.join()
         server_socket.close()

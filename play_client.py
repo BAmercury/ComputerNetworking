@@ -1,19 +1,28 @@
 #!/usr/bin/env python
-
+# Using Python 2.7
 import socket
 import os
 import sys
 
+# Server Host IP address and port information
 TCP_IP = '192.168.1.126'
 TCP_PORT = 5005
+# TCP message buffer size
 BUFFER_SIZE = 1024
 
 
+# Create TCP socket, use AF_INET family of addresses
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# Connect to the TCP Server
 s.connect((TCP_IP, TCP_PORT))
 
+# Boolean to control the main application loop
 keep_alive = True
 
+# Boolean to see if user requests a non persistent connection
+nonpersis = False
+
+# Generate a large comma delimited string message
 def generate_cda():
     words = []
     number_of_words = raw_input("Please enter how many words you would like to check: ")
@@ -25,10 +34,9 @@ def generate_cda():
     return word_string
 
 
-# Boolean to see if user requests a non persistent connection
-nonpersis = False
 
 
+# Main application loop
 while keep_alive:
     # Show list of available commands to the user
     print("----Commands----")
@@ -42,14 +50,17 @@ while keep_alive:
     print("8: Delete palindromes at specfic positions")
     print("9: Request non-persistent connection")
     command = raw_input("Please enter a command: ")
-
+	# Parse the user input command. Evaluated as a string
     if (command == "1"):
+		# Send a single word to the server for evaluation
         payload = []
         word = raw_input("Please give me a word: ")
+		# Append the command to the payload
         payload.append("1")
         payload.append(word)
-        payload_string = ",".join(payload)
+        payload_string = ",".join(payload) # Convert Python list to a comma delimited string
         s.send(payload_string)
+		# Recieve server response and display
         data = s.recv(BUFFER_SIZE)
         print(data)
         # If non-persistent connection was requested. Disconnect from server
@@ -58,7 +69,9 @@ while keep_alive:
             keep_alive = False
             break
     elif (command == "2"):
+		# Prompt user to input a list of words
         payload = generate_cda()
+		# Send the comma delimited string payload
         s.send(payload)
         data = s.recv(BUFFER_SIZE)
         print(data)
@@ -146,17 +159,21 @@ while keep_alive:
         print("Connection will close when command is executed")
         nonpersis = True
     elif (command == "3"):
+		# Client wishes to disconnect from server
         s.send("3")
         data = s.recv(BUFFER_SIZE)
         print(data)
         keep_alive = False
         break
     else:
+		# User may input an improper command. Tell user to rectify
         print("Please insert a command listed on the table")
 
 print("Connection is closed")
+# Close the socket connection
 s.close()
 
+# Prompt user if they wish to restart the application and reconnect
 restart = raw_input("\nDo you want to restart the program? [y/n] > ")
 
 if restart == "y":
