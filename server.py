@@ -28,11 +28,9 @@ class ClientCallBack(threading.Thread):
     def run(self):
         while True:
             data = conn.recv(BUFFER_SIZE)
-
             if (data == "Exit"):
                 break
-            else:
-                conn.send("Got It")
+            conn.send("Got It")
         conn.send("Bye")
         conn.close()
 
@@ -51,7 +49,10 @@ if __name__ == '__main__':
             #threads.append(callback_thread)
         for t in threads:
             t.join()
+        server_socket.close()
     except KeyboardInterrupt:
+        for t in threads:
+            t.join()
         server_socket.close()
         pass
 
