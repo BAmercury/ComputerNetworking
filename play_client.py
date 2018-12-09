@@ -14,12 +14,44 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((TCP_IP, TCP_PORT))
 
 keep_alive = True
+
+def generate_cda():
+    words = []
+    number_of_words = raw_input("Please enter how many words you would like to check: ")
+    for i in xrange(0, int(number_of_words)):
+        words.append(raw_input("Enter a word: "))
+
+    words = ["2"] + words
+    word_string = ",".join(words)
+    return word_string
+
+
+
 while keep_alive:
-    payload = raw_input("Please enter a string: ")
-    s.send(payload)
-    data = s.recv(BUFFER_SIZE)
-    print(data)
-    if (data == "Bye"):
+    print("---Commands---")
+    print("1: Send single word")
+    print("2: Send multiple words")
+    print("3: Exit and close connection")
+    command = raw_input("Please enter a command: ")
+
+    if (command == "1"):
+        payload = []
+        word = raw_input("Please give me a word: ")
+        payload.append("1")
+        payload.append(word)
+        payload_string = ",".join(payload)
+        s.send(payload_string)
+        data = s.recv(BUFFER_SIZE)
+        print(data)
+    elif (command == "2"):
+        payload = generate_cda()
+        s.send(payload)
+        data = s.recv(BUFFER_SIZE)
+        print(data)
+    elif (command == "3"):
+        s.send("3")
+        data = s.recv(BUFFER_SIZE)
+        print(data)
         keep_alive = False
         break
 s.close()
