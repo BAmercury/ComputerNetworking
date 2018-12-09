@@ -85,10 +85,15 @@ class ClientCallBack(threading.Thread):
                         found_palindromes.append(word)
                 results_string = ",".join(results)
                 conn.send(results_string)
+            elif (data_list[0] == "4"):
+                # Send back the amount of palindromes found
+                payload = "Amount of palindromes found: " + str(len(found_palindromes))
+                conn.send(payload)
             elif (data_list[0] == "3"):
                 list_to_file(self.ip, found_palindromes)
                 conn.send("Bye")
                 break
+            
         conn.close()
 
 if __name__ == '__main__':
@@ -100,9 +105,6 @@ if __name__ == '__main__':
             print("Client connected. Address: ", address)
             newThread = ClientCallBack(ip,address)
             newThread.start()
-            threads.append(newThread)
-        for t in threads:
-            t.join()
         server_socket.close()
     except KeyboardInterrupt:
         for t in threads:

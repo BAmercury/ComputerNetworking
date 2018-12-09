@@ -30,6 +30,7 @@ while keep_alive:
     print("1: Send single word")
     print("2: Send multiple words")
     print("3: Exit and close connection")
+    print("4: Total number of palindromes found")
     command = raw_input("Please enter a command: ")
 
     if (command == "1"):
@@ -44,6 +45,11 @@ while keep_alive:
     elif (command == "2"):
         payload = generate_cda()
         s.send(payload)
+        data = s.recv(BUFFER_SIZE)
+        print(data)
+    elif (command == "4"):
+        # Return result from server, the amount of palindromes found thus far:
+        s.send("4")
         data = s.recv(BUFFER_SIZE)
         print(data)
     elif (command == "3"):
