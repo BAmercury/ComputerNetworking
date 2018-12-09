@@ -91,13 +91,27 @@ class ClientCallBack(threading.Thread):
                 conn.send(payload)
             elif (data_list[0] == "5"):
                 # Send back a list of palindromes found
-                payload = ",".join(found_palindromes) # Convert python list to a string
-                conn.send(payload) # Send the string payload
+
+                # First check to see if list is not empty
+                if (len(found_palindromes) > 0):
+                    payload = ",".join(found_palindromes) # Convert python list to a string
+                    conn.send(payload) # Send the payload string
+                else:
+                    conn.send("No palindromes in list") # Tell client no palindromes are in list
             elif (data_list[0] == "6"):
                 # Return the latest palindrome
-                latest = found_palindromes[-1]
-                payload = "Latest palindrome: " + latest
-                conn.send(payload)
+                
+                # First check to see if list is not empty
+                if (len(found_palindromes) > 0):
+                    latest = found_palindromes[-1] # read out the word in the end index
+                    payload = "Latest palindrome: " + latest # Assemble string payload
+                    conn.send(payload) # send payload
+                else:
+                    conn.send("No palindromes in the list")
+            elif (data_list[0] == "7"):
+                # Client wants to delete all palindromes found
+                found_palindromes = [] # Clear the list of found palindromes
+                conn.send("Cleared the palindrome found list")
             elif (data_list[0] == "3"):
                 list_to_file(self.ip, found_palindromes)
                 conn.send("Bye")
