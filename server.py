@@ -19,6 +19,18 @@ threads = []
 
 keep_alive = True
 
+def isPalindrome(data):
+    if len(data) < 2:
+        #If the string has 0 or 1 characters, the string conforms to the palindrome definition
+        return True
+    if data[0] != data[-1]:
+        #If the string has more than one character, check that the first and last item of the string are equivalent
+        return False
+    return isPalindrome(data[1:-1])
+    #The first and last items of the string are equivalent, so remove the first and last items of the string and continue checking
+
+
+
 class ClientCallBack(threading.Thread):
 
     def __init__(self,ip,port):
@@ -30,7 +42,12 @@ class ClientCallBack(threading.Thread):
             data = conn.recv(BUFFER_SIZE)
             if (data == "Exit"):
                 break
-            conn.send("Got It")
+            else:
+                result = isPalindrome(data)
+                if (result == True):
+                    conn.send("Your word was a palindrome")
+                else:
+                    conn.send("Your word is not a plaindrome")
         conn.send("Bye")
         conn.close()
 
@@ -44,9 +61,6 @@ if __name__ == '__main__':
             newThread = ClientCallBack(ip,address)
             newThread.start()
             threads.append(newThread)
-            #callback_thread = threading.Thread(target=client_callback(conn, address))
-            #callback_thread.start()
-            #threads.append(callback_thread)
         for t in threads:
             t.join()
         server_socket.close()
