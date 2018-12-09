@@ -40,15 +40,23 @@ class ClientCallBack(threading.Thread):
     def run(self):
         while True:
             data = conn.recv(BUFFER_SIZE)
-            if (data == "Exit"):
-                break
-            else:
-                result = isPalindrome(data)
+            data_list = data.split(",")
+            if (data_list[0] == "1"):
+                result = isPalindrome(data[1])
                 if (result == True):
-                    conn.send("Your word was a palindrome")
+                    conn.send("Your word is a palindrome")
                 else:
-                    conn.send("Your word is not a plaindrome")
-        conn.send("Bye")
+                    conn.send("Your word is not a palindrome")
+            elif (data_list[0] == "2"):
+                data_list.remove("2")
+                results = []
+                for word in data_list:
+                    results.append(str(isPalindrome(word)))
+                results_string = ",".join(results)
+                conn.send(results_string)
+            elif (data_list[0] == "3"):
+                conn.send("Bye")
+                break
         conn.close()
 
 if __name__ == '__main__':
