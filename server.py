@@ -76,7 +76,7 @@ class ClientCallBack(threading.Thread):
                 else:
                     conn.send("Your word is not a palindrome")
             elif (data_list[0] == "2"):
-                data_list.remove("2")
+                data_list.remove("2") # remove the command out of the list, leave only the words
                 results = []
                 for word in data_list:
                     result = str(isPalindrome(word))
@@ -112,6 +112,25 @@ class ClientCallBack(threading.Thread):
                 # Client wants to delete all palindromes found
                 found_palindromes = [] # Clear the list of found palindromes
                 conn.send("Cleared the palindrome found list")
+            elif (data_list[0] == "8"):
+                # Client wants to remove palindromes at specfic positions
+                data_list.remove("8") # remove the command from the list. Leave only the positions
+                # Convert list of strings to list of int:
+                positions = map(int, data_list)
+                for index in sorted(positions, reverse=True): # Delete in reverse order so subsequent indexes aren't thrown off
+                    try:
+                        del found_palindromes[index]
+                    # Will throw exception if the index is out of range
+                    except Exception:
+                        pass
+                # Return the updated list to the client
+
+                # First check to see if list is not empty
+                if (len(found_palindromes) > 0):
+                    payload = ",".join(found_palindromes) # Convert python list to a string
+                    conn.send(payload) # Send the payload string
+                else:
+                    conn.send("No palindromes in list") # Tell client no palindromes are in list
             elif (data_list[0] == "3"):
                 list_to_file(self.ip, found_palindromes)
                 conn.send("Bye")
