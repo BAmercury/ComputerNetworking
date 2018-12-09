@@ -89,6 +89,10 @@ class ClientCallBack(threading.Thread):
                 # Send back the amount of palindromes found
                 payload = "Amount of palindromes found: " + str(len(found_palindromes))
                 conn.send(payload)
+            elif (data_list[0] == "5"):
+                # Send back a list of palindromes found
+                payload = ",".join(found_palindromes) # Convert python list to a string
+                conn.send(payload) # Send the string payload
             elif (data_list[0] == "3"):
                 list_to_file(self.ip, found_palindromes)
                 conn.send("Bye")
