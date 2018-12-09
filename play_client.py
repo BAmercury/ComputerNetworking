@@ -26,12 +26,14 @@ def generate_cda():
 
 
 while keep_alive:
+    #Show list of available commands to the user
     print("---Commands---")
     print("1: Send single word")
     print("2: Send multiple words")
     print("3: Exit and close connection")
     print("4: Total number of palindromes found")
     print("5: Return list of palindromes found")
+    print("6: Return latest palindrome found")
     command = raw_input("Please enter a command: ")
 
     if (command == "1"):
@@ -56,6 +58,11 @@ while keep_alive:
     elif (command == "5"):
         # Ask server to return list of all palindromes found
         s.send("5")
+        data = s.recv(BUFFER_SIZE)
+        print(data)
+    elif (command == "6"):
+        # Ask server to return the lastest palindrome found
+        s.send("6")
         data = s.recv(BUFFER_SIZE)
         print(data)
     elif (command == "3"):

@@ -93,6 +93,11 @@ class ClientCallBack(threading.Thread):
                 # Send back a list of palindromes found
                 payload = ",".join(found_palindromes) # Convert python list to a string
                 conn.send(payload) # Send the string payload
+            elif (data_list[0] == "6"):
+                # Return the latest palindrome
+                latest = found_palindromes[-1]
+                payload = "Latest palindrome: " + latest
+                conn.send(payload)
             elif (data_list[0] == "3"):
                 list_to_file(self.ip, found_palindromes)
                 conn.send("Bye")
