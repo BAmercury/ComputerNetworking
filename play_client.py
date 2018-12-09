@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-#!/usr/bin/env python
-
 import socket
 
 
@@ -54,4 +52,6 @@ while keep_alive:
         print(data)
         keep_alive = False
         break
+    else:
+        print("Please insert a command listed on the table")
 s.close()

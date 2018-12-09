@@ -3,22 +3,25 @@
 from socket import *
 import threading
 from SocketServer import ThreadingMixIn
+import pickle
  
 BUFFER_SIZE = 1024
 TCP_IP = '192.168.1.126'
 TCP_PORT = 5005
 
 
-
+# Create TCP socket objects
 server_socket = socket(AF_INET, SOCK_STREAM)
 server_socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) 
 server_socket.bind((TCP_IP, TCP_PORT))
 server_socket.listen(1)
 
-threads = []
 
+# Boolean to keep server running
 keep_alive = True
 
+
+# Function to check if given string is a palindrome
 def isPalindrome(data):
     if len(data) < 2:
         #If the string has 0 or 1 characters, the string conforms to the palindrome definition
@@ -30,7 +33,30 @@ def isPalindrome(data):
     #The first and last items of the string are equivalent, so remove the first and last items of the string and continue checking
 
 
+# Load a file from local directory, returns a python list object
+def file_to_list(ip):
+    items = []
+    filename = ip + ".txt"
+    try:
+        with open(filename, 'rb') as fp:
+            items = fp.read().splitlines()
+    except Exception:
+        with open(filename, 'wb') as fp:
+            fp.write("")
+    return items
 
+# Save python list to a file. File name is the IP of the client connecting to it
+def list_to_file(ip, itemlist):
+    filename = ip + ".txt"
+    with open(filename, 'w') as fp:
+        for items in itemlist:
+            fp.write(items + "\n")
+        
+    
+    
+
+
+# Client callback function
 class ClientCallBack(threading.Thread):
 
     def __init__(self,ip,port):
@@ -38,23 +64,29 @@ class ClientCallBack(threading.Thread):
         self.ip = ip
         self.port = port
     def run(self):
+        found_palindromes = file_to_list(self.ip)
         while True:
             data = conn.recv(BUFFER_SIZE)
             data_list = data.split(",")
             if (data_list[0] == "1"):
-                result = isPalindrome(data[1])
+                result = isPalindrome(data_list[1])
                 if (result == True):
                     conn.send("Your word is a palindrome")
+                    found_palindromes.append(data_list[1])
                 else:
                     conn.send("Your word is not a palindrome")
             elif (data_list[0] == "2"):
                 data_list.remove("2")
                 results = []
                 for word in data_list:
-                    results.append(str(isPalindrome(word)))
+                    result = str(isPalindrome(word))
+                    results.append(result)
+                    if (result == "True"):
+                        found_palindromes.append(word)
                 results_string = ",".join(results)
                 conn.send(results_string)
             elif (data_list[0] == "3"):
+                list_to_file(self.ip, found_palindromes)
                 conn.send("Bye")
                 break
         conn.close()
