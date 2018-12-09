@@ -34,6 +34,7 @@ while keep_alive:
     print("4: Total number of palindromes found")
     print("5: Return list of palindromes found")
     print("6: Return latest palindrome found")
+    print("7: Delete all found palindromes")
     command = raw_input("Please enter a command: ")
 
     if (command == "1"):
@@ -63,6 +64,12 @@ while keep_alive:
     elif (command == "6"):
         # Ask server to return the lastest palindrome found
         s.send("6")
+        data = s.recv(BUFFER_SIZE)
+        print(data)
+    elif (command == "7"):
+        # Ask server to delete all the palindromes found
+        # Server should send a status reply saying if it was successful
+        s.send("7")
         data = s.recv(BUFFER_SIZE)
         print(data)
     elif (command == "3"):
