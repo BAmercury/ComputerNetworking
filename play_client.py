@@ -35,6 +35,7 @@ while keep_alive:
     print("5: Return list of palindromes found")
     print("6: Return latest palindrome found")
     print("7: Delete all found palindromes")
+    print("8: Delete palindromes at specfic positions")
     command = raw_input("Please enter a command: ")
 
     if (command == "1"):
@@ -72,6 +73,34 @@ while keep_alive:
         s.send("7")
         data = s.recv(BUFFER_SIZE)
         print(data)
+    elif (command == "8"):
+        # Ask server to remove palindromes from list at specfic positions
+        # Server will send back a list of the latest palindromes after the deletion operation
+        list_positions = []
+        user_rolling_input = True
+        print("Please give me the positions of the palindromes you want to delete")
+        print("When you are finished, just write \"done\"")
+        while (user_rolling_input):
+            user_input = raw_input("Give me a position: ")
+            # check if user is doing putting in position input
+            if (user_input == "done"):
+                print("Sending positions to server")
+                user_rolling_input = False
+            else:
+
+                try:
+                    # Verification if user input is a number
+                    val = int(user_input)
+                    if (val >= 0):
+                        list_positions.append(user_input)
+                except ValueError:
+                    print("This is not a valid position, please try again")
+        # Now send this list of positions to the server
+        list_positions = ["8"] + list_positions # Insert the command to front of list
+        payload = ",".join(list_positions)
+        s.send(payload)  
+        data = s.recv(BUFFER_SIZE)
+        print(data)  
     elif (command == "3"):
         s.send("3")
         data = s.recv(BUFFER_SIZE)
